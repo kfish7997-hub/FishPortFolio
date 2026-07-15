@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish | Roblox Luau Developer Portfolio</title>
+    <style>
+        :root {
+            --bg-color: #0d0202; 
+            --accent-color: #ef4444; 
+            --accent-glow: rgba(239, 68, 68, 0.15); 
+            --accent-bright: #f87171; 
+            --card-bg: rgba(30, 8, 8, 0.45); 
+            --card-border: rgba(255, 255, 255, 0.05); 
+            --card-hover-border: rgba(239, 68, 68, 0.4); 
+            --text-color: #f8fafc;
+            --text-muted: #cbd5e1;
+            --section-spacing: 6rem;
+            --editor-bg: #110404;
+            --code-keyword: #ff4a4a;
+            --code-variable: #fcd34d;
+            --code-string: #4ade80;
+            --code-comment: #7f8c8d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: -10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 900px;
+            height: 900px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background-color: rgba(13, 2, 2, 0.8);
+            border-bottom: 1px solid var(--card-border);
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--accent-color);
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s ease, text-shadow 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+            text-shadow: 0 0 8px var(--accent-color);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        h2.section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-icon {
+            color: var(--accent-color);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        section {
+            margin-bottom: var(--section-spacing);
+        }
+
+        header#about {
+            margin-bottom: 5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .code-window {
+            background-color: var(--editor-bg);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(239, 68, 68, 0.05);
+            font-family: 'Fira Code', 'Courier New', Courier, monospace;
+            font-size: 0.88rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .window-header {
+            background-color: rgba(255, 255, 255, 0.03);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+        }
+
+        .window-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+        .dot-red { background-color: #ff5f56; }
+        .dot-yellow { background-color: #ffbd2e; }
+        .dot-green { background-color: #27c93f; }
+
+        .window-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .code-area {
+            padding: 1.25rem;
+            display: flex;
+            gap: 1.25rem;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .line-numbers {
+            text-align: right;
+            color: rgba(255, 255, 255, 0.15);
+            user-select: none;
+            white-space: pre-line;
+        }
+
+        .code-content {
+            white-space: pre;
+            color: #f8fafc;
+        }
+
+        .kw { color: var(--code-keyword); font-weight: bold; } 
+        .va { color: var(--code-variable); } 
+        .str { color: var(--code-string); } 
+        .cm { color: var(--code-comment); } 
+        .lnk { color: var(--accent-bright); text-decoration: underline; } 
+        
+        .discord-inline {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #5865F2; 
+            vertical-align: middle;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--card-hover-border);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 10px rgba(239, 68, 68, 0.15);
+        }
+
+        .card-media {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #1a0505; 
+            overflow: hidden;
+            border-bottom: 1px solid var(--card-border);
+            position: relative;
+        }
+
+        .card-media video, .card-media img, .card-media iframe {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: none;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card-media iframe {
+            pointer-events: none;
+        }
+
+        .card:hover .card-media video, 
+        .card:hover .card-media img,
+        .card:hover .card-media iframe {
+            transform: scale(1.08); 
+        }
+
+        /* Overlay link styling to block iframe capture and allow clean redirection */
+        .media-link-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            cursor: pointer;
+        }
+
+        .video-play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.25);
+            pointer-events: none; 
+            transition: opacity 0.3s ease, background-color 0.3s ease;
+            z-index: 2;
+        }
+
+        .play-button-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(239, 68, 68, 0.9); 
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+            transform: scale(1);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+        }
+
+        .play-button-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: #ffffff;
+            margin-left: 3px; 
+        }
+
+        .card:hover .video-play-overlay {
+            opacity: 0; 
+        }
+
+        .card:hover .play-button-icon {
+            transform: scale(1.15);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .card-info h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .card-info p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .btn-play, .btn-buy {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: var(--accent-color);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-decoration: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            margin-top: auto;
+            border: none;
+            cursor: pointer;
+            z-index: 4; /* Stays above the absolute video card link if clicked directly */
+        }
+
+        .btn-play:hover, .btn-buy:hover {
+            background-color: var(--accent-bright);
+        }
+
+        .btn-play:active, .btn-buy:active {
+            transform: scale(0.98);
+        }
+
+        .loading-text {
+            color: var(--text-muted);
+            font-style: italic;
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 5rem 0;
+            font-size: 0.9rem;
+            color: #6a5a5a;
+            border-top: 1px solid var(--card-border);
+        }
+
+        @media (max-width: 900px) {
+            header#about {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 2.6rem;
+            }
+            .nav-container {
+                padding: 1rem;
+            }
+            .container {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-container">
+            <a href="#about" class="logo">Fish</a>
+            <div class="nav-links">
+                <a href="#games">Games</a>
+                <a href="#systems">Systems</a>
+                <a href="#marketplace">Marketplace</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <header id="about">
+            <div class="hero-text">
+                <h1>Hi I'm Fish</h1>
+                <p>I am a <span style="color: var(--accent-color); font-weight: 700;">full stack scripter</span> with three and a half years of experience. For the past year, I've specialized in high performance commissions, capable of scripting almost anything from smooth visuals to secure backends.</p>
+            </div>
+
+            <div class="code-window">
+                <div class="window-header">
+                    <div class="window-dots">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                    </div>
+                    <div class="window-title">fish.lua</div>
+                </div>
+                <div class="code-area">
+                    <div class="line-numbers">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14</div>
+                    <div class="code-content"><span class="kw">local</span> Fish = {
+    Name = <span class="str">"Fish"</span>,
+    Exp = <span class="str">"3.5 Years"</span>,
+    Specialty = <span class="str">"Gameplay and Systems"</span>,
+
+    Links = {
+        Roblox = <a class="lnk" href="https://www.roblox.com/users/3027287478/profile" target="_blank">RobloxProfile</a>,
+        Discord = <span class="str">"<span class="discord-inline"><svg width="14" height="14" viewBox="0 0 127.14 96.36" fill="currentColor"><path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.86,54.65,1,77.53A105.73,105.73,0,0,0,32,96.36a74.37,74.37,0,0,0,6.72-10.93,68.6,68.6,0,0,1-10.64-5.12c.91-.67,1.81-1.37,2.65-2.1a75.22,75.22,0,0,0,72.94,0c.84.73,1.74,1.43,2.65,2.1a68.56,68.56,0,0,1-10.64,5.12,74.74,74.74,0,0,0,6.72,10.93,105.73,105.73,0,0,0,31-18.83C129.56,50.7,123.83,27.78,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.83,46,53.83,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.07,46,96.07,53,91,65.69,84.69,65.69Z"/></svg>@myd3</span>"</span>
+    },
+
+    Code = <span class="str">"Clean, modular, and"</span>
+             .. <span class="str">" Luau code."</span>
+}
+<span class="cm">-- i am fish</span></div>
+                </div>
+            </div>
+        </header>
+
+        <section id="games">
+            <h2 class="section-title">
+                <span class="section-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/><path d="M17 10h.01"/><path d="M15 14h.01"/><path d="M7 12h2"/><path d="M8 11v2"/></svg>
+                </span> 
+                Games I’ve Worked On
+            </h2>
+            <div class="grid" id="games-grid">
+                <p class="loading-text">Searching project directory...</p>
+            </div>
+        </section>
+
+        <section id="systems">
+            <h2 class="section-title">
+                <span class="section-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </span> 
+                Core Luau Systems
+            </h2>
+            <div class="grid" id="systems-grid">
+                <p class="loading-text">Searching system files...</p>
+            </div>
+        </section>
+
+        <section id="marketplace">
+            <h2 class="section-title">
+                <span class="section-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                </span> 
+                Systems For Sale
+            </h2>
+            <div class="grid" id="marketplace-grid">
+                <p class="loading-text">Accessing inventory store...</p>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Fish. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const fallbackImage = 'https://images.rbxcdn.com/f8b9ecf0d04c86b24d7768fb3a54d6fa.png';
+
+        const GAME_FILES = ['RocketPush.json', 'HideOrExplode.json']; 
+        const SYSTEM_FILES = ['RocketLauncher.json', 'ItemDropper.json']; 
+        const MARKET_FILES = ['Template.json'];
+
+        async function fetchJson(path) {
+            const res = await fetch(path);
+            if (!res.ok) throw new Error(`Could not load ${path}`);
+            return await res.json();
+        }
+
+        function getYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function createCard(data, type) {
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const mediaSrc = data.media || data.thumbnail || fallbackImage;
+            const ytId = getYouTubeId(mediaSrc);
+
+            // Determine redirect URL: Use the custom media link (YouTube URL) if present, otherwise fallback
+            let redirectUrl = mediaSrc;
+            if (!ytId) {
+                if (type === 'game') {
+                    redirectUrl = `https://www.roblox.com/games/${data.gameId}`;
+                } else if (type === 'market') {
+                    redirectUrl = data.purchaseLink || '#';
+                } else if (type === 'system') {
+                    redirectUrl = 'https://www.roblox.com/users/3027287478/profile';
+                }
+            }
+
+            let mediaMarkup = '';
+
+            if (ytId) {
+                // If it is a YouTube video, render player and overlay linking directly to their YouTube URL
+                mediaMarkup = `
+                    <iframe src="https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&modestbranding=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    <a href="${redirectUrl}" target="_blank" class="media-link-overlay" aria-label="View on YouTube"></a>
+                    <div class="video-play-overlay">
+                        <div class="play-button-icon">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>`;
+            } else {
+                // Otherwise static image card wrapping the redirect
+                mediaMarkup = `
+                    <a href="${redirectUrl}" target="_blank" class="media-link-overlay" aria-label="View project source"></a>
+                    <img src="${mediaSrc}" alt="${data.name || data.gamename || 'Visual'}" onerror="this.src='${fallbackImage}'">`;
+            }
+
+            let actionBtn = '';
+            if (type === 'game') {
+                actionBtn = `
+                    <a href="https://www.roblox.com/games/${data.gameId}" target="_blank" class="btn-play">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Play Game
+                    </a>`;
+            } else if (type === 'market') {
+                actionBtn = `
+                    <a href="${data.purchaseLink || '#'}" target="_blank" class="btn-buy">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg> 
+                        Buy Asset ${data.price ? `• ${data.price}` : ''}
+                    </a>`;
+            }
+
+            card.innerHTML = `
+                <div class="card-media">${mediaMarkup}</div>
+                <div class="card-content">
+                    <div class="card-info">
+                        <h3>${data.name || data.gamename || 'Untitled Core Component'}</h3>
+                        <p>${data.description || data.discreption || 'No visual breakdown text provided.'}</p>
+                    </div>
+                    ${actionBtn}
+                </div>
+            `;
+            return card;
+        }
+
+        async function loadSection(files, folder, containerId, type) {
+            const grid = document.getElementById(containerId);
+            if (!grid) return;
+
+            if (files.length === 0) {
+                grid.innerHTML = `<p class="loading-text">Nothing in this directory yet.</p>`;
+                return;
+            }
+
+            grid.innerHTML = '';
+
+            const promises = files.map(async (fileName) => {
+                try {
+                    const data = await fetchJson(`${folder}/${fileName}`);
+                    grid.appendChild(createCard(data, type));
+                } catch (error) {
+                    const errCard = document.createElement('p');
+                    errCard.className = 'loading-text';
+                    errCard.style.color = 'var(--accent-color)';
+                    errCard.innerText = `Error loading ${folder}/${fileName}`;
+                    grid.appendChild(errCard);
+                }
+            });
+
+            await Promise.all(promises);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSection(GAME_FILES, 'gamesihavemade', 'games-grid', 'game');
+            loadSection(SYSTEM_FILES, 'systemsihavemade', 'systems-grid', 'system');
+            loadSection(MARKET_FILES, 'marketplace', 'marketplace-grid', 'market');
+        });
+    </script>
+</body>
+</html>
